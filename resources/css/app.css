@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+#wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#sidebar-wrapper {
+    min-width: 250px;
+    max-width: 250px;
+    height: 100vh;
+}
