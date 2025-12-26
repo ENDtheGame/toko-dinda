@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Category;
 use App\Models\Unit;
+use App\Models\Brand;
 
 class Product extends Model
 {
@@ -15,7 +16,8 @@ class Product extends Model
     protected $fillable = [
         'name',
         'category_id',
-        'unit_id',         // Sesuaikan dengan nama di database (id satuan)
+        'unit_id',
+        'brand_id',
         'purchase_price',
         'selling_price',
         'stock',
@@ -37,4 +39,9 @@ class Product extends Model
     {
         return $this->belongsTo(Unit::class);
     }
+
+    public function brand()
+{
+    return $this->belongsTo(Brand::class);
+}
 }

@@ -4,27 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Brand;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     // Menggunakan Type Hinting untuk keamanan
-   public function index()
+   public function index(Request $request)
 {
-    // Menggunakan with('category') agar loading lebih cepat (Eager Loading)
-    $products = Product::with('category')->latest()->get();
-    $categories = Category::all();
-    $units = Unit::all(); // Ambil semua satuan untuk ditampilkan
+    $query = Product::with(['category', 'unit', 'brand']);
 
-    return view('products.index', compact('products', 'categories','units'));
+    // Logika Pencarian
+    if ($request->has('search')) {
+        $query->where('name', 'like', '%' . $request->search . '%')
+              ->orWhereHas('category', function($q) use ($request) {
+                  $q->where('name', 'like', '%' . $request->search . '%');
+              });
+    }
+
+    // Mengambil data dengan pagination (misal 10 data per halaman)
+    // appends(request()->all()) penting agar saat pindah halaman search tidak hilang
+    $products = $query->latest()->paginate(10)->withQueryString();
+
+    $categories = Category::all();
+    $units = Unit::all();
+    $brands = Brand::all();
+
+    return view('products.index', compact('products', 'categories', 'units', 'brands'));
 }
 
     public function create()
 {
     $categories = Category::all();
     $units = Unit::all(); // Ambil semua satuan untuk dipilih
-    return view('products.create', compact('categories', 'units'));
+    $brands = Brand::all();
+    return view('products.create', compact('categories', 'units', 'brands'));
 }
 
 public function store(Request $request)
@@ -32,17 +47,31 @@ public function store(Request $request)
     $request->validate([
         'name' => 'required',
         'category_id' => 'required|exists:categories,id',
-        'unit_id' => 'required|exists:units,id', // Ganti dari 'unit_id' ke 'unit_id'
+        'unit_id' => 'required|exists:units,id',
+        'brand_id' => 'required|exists:brands,id',
         'purchase_price' => 'required|numeric',
         'selling_price' => 'required|numeric',
-        'stock' => 'required|numeric',
+        'stock' => 'required|numeric', // Ini sudah total pcs dari javascript modal
         'wholesale_min' => 'nullable|numeric',
         'wholesale_price' => 'nullable|numeric',
     ]);
 
-    Product::create($request->all());
+    // 1. Ambil data satuan untuk tahu nilai konversinya
+    $unit = Unit::find($request->unit_id);
+    $konversi = $unit->base_quantity ?? 1;
 
-    return redirect()->route('products.index')->with('success', 'Produk berhasil disimpan!');
+    // 2. Siapkan data yang akan disimpan
+    $data = $request->all();
+
+    // 3. LOGIKA ANALOGI: Bagi harga input dengan jumlah isi barang
+    // Misal: Harga Dus 140.000 / 40 pcs = 3.500 (yang disimpan ke DB)
+    $data['purchase_price'] = $request->purchase_price / $konversi;
+    $data['selling_price'] = $request->selling_price / $konversi;
+
+    // 4. Simpan ke database
+    Product::create($data);
+
+    return redirect()->route('products.index')->with('success', 'Produk berhasil disimpan dengan harga satuan terkecil!');
 }
 
 public function update(Request $request, Product $product)
@@ -50,12 +79,15 @@ public function update(Request $request, Product $product)
     $request->validate([
         'name' => 'required',
         'category_id' => 'required|exists:categories,id',
-        'unit_id' => 'required|exists:units,id', // Ganti dari 'unit_id' ke 'unit_id'
+        'brand_id' => 'nullable|exists:brands,id',
         'purchase_price' => 'required|numeric',
         'selling_price' => 'required|numeric',
         'stock' => 'required|numeric',
     ]);
 
+    // Karena di modal edit kita biasanya langsung edit harga satuan (pcs),
+    // maka kita bisa langsung update tanpa membagi lagi,
+    // KECUALI jika kamu menambah pilihan satuan di modal edit nantinya.
     $product->update($request->all());
 
     return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui!');
@@ -64,7 +96,9 @@ public function update(Request $request, Product $product)
     // Menggunakan Route Model Binding (langsung panggil Product $product)
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $categories = Category::all();
+        $brands = Brand::all(); // Ambil semua data brand
+        return view('products.edit', compact('product', 'categories', 'brands'));
     }
 
 
@@ -72,5 +106,18 @@ public function update(Request $request, Product $product)
 {
     $product->delete();
     return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus!');
+}
+public function bulkDelete(Request $request)
+{
+    $ids = $request->ids;
+
+    if (!$ids || count($ids) == 0) {
+        return back()->with('error', 'Pilih produk yang ingin dihapus terlebih dahulu.');
+    }
+
+    // Menghapus semua produk yang ID-nya ada dalam array $ids
+    Product::whereIn('id', $ids)->delete();
+
+    return back()->with('success', count($ids) . ' produk berhasil dihapus secara massal.');
 }
 }

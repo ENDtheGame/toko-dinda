@@ -15,20 +15,23 @@ class UnitController extends Controller
     $parentUnits = Unit::whereNull('parent_id')->with('children')->get(); // Untuk tabel accordion
     return view('units.index', compact('units', 'parentUnits'));
 }
-   public function store(Request $request)
+public function store(Request $request)
 {
     $request->validate([
         'name' => 'required|string|max:255',
         'parent_id' => 'nullable|exists:units,id',
-        'base_quantity' => 'nullable|numeric|min:0.01',
+        'base_quantity' => 'nullable|numeric|min:1', // Ubah jadi nullable agar tidak error di validasi
     ]);
 
-    // Cek apakah user mencoba menjadikan satuan sebagai induk dirinya sendiri
-    if ($request->parent_id && $request->name == Unit::find($request->parent_id)->name) {
-        return redirect()->back()->with('error', 'Nama satuan tidak boleh sama dengan satuan dasarnya!');
+    // LOGIKA PERBAIKAN:
+    // Jika tidak ada parent_id, maka base_quantity WAJIB 1 (satuan dasar)
+    // Jika ada parent_id tapi base_quantity kosong, beri default 1
+    $data = $request->all();
+    if (empty($request->parent_id) || empty($request->base_quantity)) {
+        $data['base_quantity'] = 1;
     }
 
-    Unit::create($request->all());
+    Unit::create($data);
 
     return redirect()->route('units.index')->with('success', 'Satuan berhasil ditambahkan!');
 }

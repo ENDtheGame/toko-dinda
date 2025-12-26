@@ -7,18 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class SaleDetail extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'sale_id',
-        'product_id',
-        'quantity',
-        'price',
-        'subtotal',
-    ];
+    protected $fillable = ['sale_id', 'product_id', 'quantity', 'price', 'subtotal'];
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withDefault([
+        'name' => 'Produk Tidak Ditemukan'
+    ]);
     }
 }

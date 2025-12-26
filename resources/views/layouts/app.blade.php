@@ -36,6 +36,10 @@
                     class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 {{ request()->routeIs('categories.*') ? 'bg-gray-700' : '' }}">
                     Kategori Produk
                 </a>
+                <a href="{{ route('brands.index') }}"
+                    class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 {{ request()->routeIs('brands.*') ? 'bg-gray-700' : '' }}">
+                    Manajemen Brand
+                </a>
                 <a href="{{ route('units.index') }}"
                     class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 {{ request()->routeIs('units.*') ? 'bg-gray-700' : '' }}">
                     Konversi Satuan
@@ -55,7 +59,7 @@
                 </a>
             </nav>
             <div class="p-4 border-t border-gray-700 text-sm text-gray-400">
-                v1.0 - Warung Grosir
+                v1.0 - Toko Dinda
             </div>
         </aside>
 

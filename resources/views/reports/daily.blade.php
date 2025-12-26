@@ -4,19 +4,38 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Laporan Penjualan Harian') }}
             </h2>
-            <a href="{{ route('reports.daily.pdf', ['date' => $date]) }}"
-                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-bold shadow-sm flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="Document-download"></path>
-                </svg>
-                Cetak ke PDF
-            </a>
         </div>
     </x-slot>
-
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-6">
+        <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 rounded-r-lg shadow-sm">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-bold text-amber-800 dark:text-amber-200 uppercase">
+                        Penting: Prosedur Tukar Barang
+                    </h3>
+                    <p class="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                        Jika ada pelanggan ingin tukar barang/retur, ikuti langkah berikut agar <strong>Stok Tidak
+                            Selisih</strong>:
+                    </p>
+                    <ul class="list-decimal pl-5 mt-2 text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                        <li>Cari transaksi yang dimaksud pada tabel di bawah.</li>
+                        <li>Klik tombol <span class="px-1 bg-red-100 text-red-700 rounded font-bold">Hapus</span> (ikon
+                            tempat sampah).</li>
+                        <li>Sistem akan <strong>mengembalikan stok</strong> secara otomatis ke database.</li>
+                        <li>Input ulang barang yang baru di menu <strong>Kasir</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mb-6">
                 <form action="{{ route('reports.daily') }}" method="GET" class="flex items-end space-x-4">
                     <div class="w-48">
@@ -29,6 +48,14 @@
                         class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Filter</button>
                     <a href="{{ route('reports.daily') }}" class="text-gray-500 hover:underline text-sm pb-2">Hari
                         Ini</a>
+                    <a href="{{ route('reports.daily.pdf', ['date' => $date]) }}"
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-bold shadow-sm flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="Document-download">
+                            </path>
+                        </svg>
+                        Cetak ke PDF
+                    </a>
                 </form>
             </div>
 

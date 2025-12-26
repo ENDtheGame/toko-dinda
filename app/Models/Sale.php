@@ -9,7 +9,6 @@ class Sale extends Model
 {
     use HasFactory;
 
-    // Tambahkan baris ini
     protected $fillable = [
         'invoice_number',
         'total_price',
@@ -18,15 +17,16 @@ class Sale extends Model
         'user_id',
     ];
 
-    // Relasi ke User (Kasir)
+    // Hapus $casts items karena kita pakai tabel sale_details
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relasi ke Detail Penjualan
     public function details()
     {
+        // Pastikan ini hasMany ke SaleDetail
         return $this->hasMany(SaleDetail::class);
     }
 }
