@@ -10,20 +10,20 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('products', function (Blueprint $table) {
-        $table->dropColumn(['wholesale_min', 'wholesale_price']);
-        $table->dropForeign(['unit_id']);
-        $table->dropColumn('unit_id');
-    });
-}
+    {
+        Schema::table('brands', function (Blueprint $table) {
+            $table->string('sales_name')->nullable();
+            $table->string('sales_phone')->nullable();
+            $table->string('main_category')->nullable(); // Kategori utama brand ini
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('product', function (Blueprint $table) {
+        Schema::table('brands', function (Blueprint $table) {
             //
         });
     }

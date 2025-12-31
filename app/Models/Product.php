@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,19 +16,21 @@ class Product extends Model
 
     protected $fillable = [
         'name',
+        'price',
         'category_id',
         'unit_id',
         'brand_id',
         'purchase_price',
         'selling_price',
         'stock',
-        'wholesale_min',   // Tambahkan ini agar bisa simpan harga grosir
-        'wholesale_price', // Tambahkan ini agar bisa simpan harga grosir
+        'min_stock',
+        'wholesale_min',
+        'wholesale_price',
     ];
     public function products()
     {
-    return $this->hasMany(Product::class);
-}
+        return $this->hasMany(Product::class);
+    }
 
     public function category()
     {
@@ -41,7 +44,7 @@ class Product extends Model
     }
 
     public function brand()
-{
-    return $this->belongsTo(Brand::class);
-}
+    {
+        return $this->belongsTo(Brand::class);
+    }
 }

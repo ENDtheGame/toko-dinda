@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\StockEntryController;
 use Illuminate\Support\Facades\Route;
 // 1. Grouping Admin
 // 1. Fitur KHUSUS Admin (Kasir tidak bisa buka ini)
@@ -49,9 +50,14 @@ Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
     // Hanya mengizinkan method yang benar-benar ada di Controller
     Route::resource('units', UnitController::class);
     Route::delete('/units/{unit}', [UnitController::class, 'destroy'])->name('units.destroy');
+
+
     Route::resource('brands', BrandController::class);
     Route::delete('/brands/{brand}', [BrandController::class, 'destroy'])->name('brands.destroy');
     Route::post('/brands/bulk-delete', [BrandController::class, 'bulkDelete'])->name('brands.bulkDelete');
+    Route::post('/stock-entry', [StockEntryController::class, 'store'])->name('stock-entry.store');
+    Route::get('/stock-histories', [StockEntryController::class, 'index'])->name('stock-histories.index');
+    Route::delete('/stock-histories/{id}', [StockEntryController::class, 'destroy'])->name('stock-histories.destroy');
 });
 // Profile Routes (accessible by all authenticated users)
 Route::middleware('auth')->group(function () {
@@ -63,5 +69,4 @@ Route::middleware('auth')->group(function () {
 Route::get('/', function () {
     return view('welcome');
 });
-require __DIR__.'/auth.php';
-
+require __DIR__ . '/auth.php';

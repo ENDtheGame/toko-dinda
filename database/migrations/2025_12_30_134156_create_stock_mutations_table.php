@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_mutations', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('product_id')->constrained();
-    $table->enum('type', ['in', 'out']); // Masuk atau Keluar
-    $table->integer('amount');
-    $table->string('note')->nullable(); // Contoh: "Kulakan dari Supplier A"
-    $table->timestamps();
-});
+            $table->engine = 'InnoDB';
+            $table->id();
+            $table->foreignId('product_id')->constrained('products');
+            $table->enum('type', ['in', 'out']); // Masuk atau Keluar
+            $table->integer('amount');
+            $table->string('note')->nullable(); // Contoh: "Kulakan dari Supplier A"
+            $table->timestamps();
+        });
     }
 
     /**
